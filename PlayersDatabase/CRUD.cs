@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace PlayersDatabase
 {
@@ -48,5 +49,88 @@ namespace PlayersDatabase
 
 
         } //End Update Method
+
+
+        public bool Delete(SqlConnection conn, int id)
+        {
+            try
+            {
+                conn.Open();
+
+                string deleteString = "DELETE FROM Players WHERE Id = @id";
+
+                //Open Connection
+                //Associate the Reader with the SQL Command
+                SqlCommand cmd = new SqlCommand(deleteString, conn);
+                //Scalar
+                cmd.Parameters.Add("@ID", SqlDbType.Int);
+                cmd.Parameters["@ID"].Value = id;
+
+                cmd.ExecuteNonQuery();
+                return true;
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return false;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+
+        public bool Update(SqlConnection conn, int id, string name, string lname, DateTime age, decimal height, decimal distance, string speed)
+        {
+            //Try Block To Insert Into Database
+            try
+            {
+                //Cast Max Speed Text Box Value to Double
+                double maxSpeed = Convert.ToDouble(speed);
+
+                //create a new Insert String 
+                conn.Open();
+
+
+                string InsertString = @"Update Players 
+                                        SET First_Name = @fname, Last_Name = @lname, 
+                                        Age = @age, Height = @height,
+                                        RunningDistance = @distance, MaxSpeed = @speed 
+                                        WHERE Id = @id";
+
+
+                //Open Connection
+                //Associate the Reader with the SQL Command
+                SqlCommand cmd = new SqlCommand(InsertString, conn);
+
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@lname", lname);
+                cmd.Parameters.AddWithValue("@age", age);
+                cmd.Parameters.AddWithValue("@height", height);
+                cmd.Parameters.AddWithValue("@distance", distance);
+                cmd.Parameters.AddWithValue("@speed", speed);
+
+                //Execute Query
+                cmd.ExecuteNonQuery();
+
+                return true;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return false;
+
+            }
+            finally
+            {
+
+                conn.Close();
+
+            }
+
+        } // End Update Method
     }
 }

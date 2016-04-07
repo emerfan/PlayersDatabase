@@ -40,11 +40,11 @@
             this.label5 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.insertPlayer = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.panel1.SuspendLayout();
@@ -158,42 +158,34 @@
             this.label6.TabIndex = 11;
             this.label6.Text = "Max Speed";
             // 
-            // button1
+            // insertPlayer
             // 
-            this.button1.Location = new System.Drawing.Point(163, 245);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(87, 23);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "Insert Player";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.insertPlayer.Location = new System.Drawing.Point(163, 245);
+            this.insertPlayer.Name = "insertPlayer";
+            this.insertPlayer.Size = new System.Drawing.Size(141, 37);
+            this.insertPlayer.TabIndex = 12;
+            this.insertPlayer.Text = "Insert Player";
+            this.insertPlayer.UseVisualStyleBackColor = true;
+            this.insertPlayer.Click += new System.EventHandler(this.insertPlayer_Click);
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Coral;
             this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.button3);
-            this.panel1.Controls.Add(this.button1);
+            this.panel1.Controls.Add(this.insertPlayer);
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
             this.panel1.ForeColor = System.Drawing.Color.CornflowerBlue;
             this.panel1.Location = new System.Drawing.Point(12, 5);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1010, 359);
+            this.panel1.Size = new System.Drawing.Size(1166, 359);
             this.panel1.TabIndex = 25;
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(426, 17);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(582, 297);
-            this.dataGridView1.TabIndex = 26;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(821, 315);
+            this.button2.Location = new System.Drawing.Point(987, 315);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(163, 23);
+            this.button2.Size = new System.Drawing.Size(163, 41);
             this.button2.TabIndex = 12;
             this.button2.Text = "Update Selected Record";
             this.button2.UseVisualStyleBackColor = true;
@@ -203,13 +195,21 @@
             // 
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.button3.ForeColor = System.Drawing.Color.DarkCyan;
-            this.button3.Location = new System.Drawing.Point(414, 315);
+            this.button3.Location = new System.Drawing.Point(804, 315);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(163, 23);
+            this.button3.Size = new System.Drawing.Size(163, 41);
             this.button3.TabIndex = 12;
             this.button3.Text = "Delete Selected Record";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(426, 17);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(749, 297);
+            this.dataGridView1.TabIndex = 26;
             // 
             // Form1
             // 
@@ -244,7 +244,7 @@
         #endregion
 
         private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button insertPlayer;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label5;

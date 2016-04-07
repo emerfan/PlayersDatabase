@@ -20,6 +20,12 @@ namespace PlayersDatabase
         //CRUD class to perform methods
         CRUD crud = new CRUD();
 
+        //SqlDataAdapter
+        SqlDataAdapter dataAdapter;
+
+        //SqlCommandBuilder
+        SqlCommandBuilder com;
+
         //Create a new connection to the database
         SqlConnection conn = new SqlConnection("Data Source=lugh4.it.nuigalway.ie;Persist Security Info=True;User ID=msdb2367;Password=msdb2367EM");
         public Form1()
@@ -30,7 +36,7 @@ namespace PlayersDatabase
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void insertPlayer_Click(object sender, EventArgs e)
         {
             //boolean to get return value from insert method
             bool isUpdated;
@@ -51,10 +57,42 @@ namespace PlayersDatabase
             //If insert is not successful
             else
             {
-                MessageBox.Show("Could Not Update Player.");
+                MessageBox.Show("Could Not Insert Player.");
             }
             
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            com.GetUpdateCommand();
+            dataAdapter.Update(ds, "Players");
+            
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //Prompt user to confirm that they want to delete the records
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete these records? This cannot be undone.", "Permanent Delete Warning", MessageBoxButtons.YesNo);
+            //If Yes
+            if (dialogResult == DialogResult.Yes)
+            {
+                //Delete the Records
+                foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+                {
+                    //Get The Selected Players ID
+                    int getID = Convert.ToInt32(row.Cells[0].Value.ToString());
+                    crud.Delete(conn, getID);
+                    loadData();
+                    
+                }
+            }
+
+        } // End delete_Click
+
+
+
+
+
 
 
 
@@ -62,35 +100,23 @@ namespace PlayersDatabase
         private void loadData()
         {
             //Select everything in the players db
-            string select = "SELECT First_Name as 'First Name', Last_Name as 'Last Name', Age, Height, RunningDistance as 'Running Distance', MaxSpeed as 'Max Speed' FROM Players";
-
+            string select = "SELECT Id as 'Player ID' , First_Name as 'First Name', Last_Name as 'Last Name', Age, Height, RunningDistance as 'Running Distance', MaxSpeed as 'Max Speed' FROM Players";
             //Create a new SqlDataAdapter with the select string and the connection
-            SqlDataAdapter dataAdapter = new SqlDataAdapter(select, conn); //c.con is the connection string
+            dataAdapter = new SqlDataAdapter(select, conn);
 
-
-            //SqlCommandBuilder commandBuilder = new SqlCommandBuilder(dataAdapter);
-
+            com = new SqlCommandBuilder(dataAdapter); 
             //Instantiate a new DataSet();
             ds = new DataSet();
             //Use the dataAdapter to fill the dataset with the Players table
             dataAdapter.Fill(ds, "Players");
-            dataGridView1.ReadOnly = true;
+
+            dataGridView1.ReadOnly = false;
+            dataGridView1.MultiSelect = false;
             //Associate the view with the datasource
-            dataGridView1.DataSource = ds.Tables[0];
+            dataGridView1.DataSource = ds;
+            dataGridView1.DataMember = "Players";
 
             conn.Close();
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            //SqlCommandBuilder sca = new SqlCommandBuilder();
-            //sca.GetUpdateCommand(ds);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

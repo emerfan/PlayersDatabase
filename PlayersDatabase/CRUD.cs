@@ -12,7 +12,7 @@ namespace PlayersDatabase
     class CRUD
     {
 
-        //UPDATE method
+        //1. Insert method
         public bool Insert(SqlConnection conn, string name, string lname, DateTime age, decimal height, decimal distance, string speed)
         {
             //Try to Update, if so return true to the form so it can clear the inputs and show success message
@@ -41,7 +41,7 @@ namespace PlayersDatabase
             }
 
             //If there is an error, return false so that an error message can be displayed
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
                 return false;
@@ -50,7 +50,7 @@ namespace PlayersDatabase
 
         } //End Update Method
 
-
+        //2. DELETE method
         public bool Delete(SqlConnection conn, int id)
         {
             try
@@ -81,56 +81,154 @@ namespace PlayersDatabase
             }
         }
 
-
-        public bool Update(SqlConnection conn, int id, string name, string lname, DateTime age, decimal height, decimal distance, string speed)
+        // 3. Calculate Mean Distance Method
+        public double CalcMeanDistance(SqlConnection conn)
         {
-            //Try Block To Insert Into Database
+            // Data Reader
+            SqlDataReader rdr = null;
+
+            //Try Block To Read from Database
             try
             {
-                //Cast Max Speed Text Box Value to Double
-                double maxSpeed = Convert.ToDouble(speed);
-
-                //create a new Insert String 
+                //Open Connection
                 conn.Open();
 
+                //Create a SQL Command
+                SqlCommand command = new SqlCommand("SELECT RunningDistance FROM Players", conn);
 
-                string InsertString = @"Update Players 
-                                        SET First_Name = @fname, Last_Name = @lname, 
-                                        Age = @age, Height = @height,
-                                        RunningDistance = @distance, MaxSpeed = @speed 
-                                        WHERE Id = @id";
-
-
-                //Open Connection
                 //Associate the Reader with the SQL Command
-                SqlCommand cmd = new SqlCommand(InsertString, conn);
+                rdr = command.ExecuteReader();
 
-                cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@lname", lname);
-                cmd.Parameters.AddWithValue("@age", age);
-                cmd.Parameters.AddWithValue("@height", height);
-                cmd.Parameters.AddWithValue("@distance", distance);
-                cmd.Parameters.AddWithValue("@speed", speed);
+                //Int to Hold Result
+                int result = 0;
+                int playerAmount = 0;
+                //While There is Data to be read
+                while (rdr.Read())
+                {
+                    result += (int)rdr[0];
+                    playerAmount++;
+                }
 
-                //Execute Query
-                cmd.ExecuteNonQuery();
-
-                return true;
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                return false;
+                double finalResult = (result / playerAmount);
+                //Console.WriteLine("The Mean Running Distance of the Team is is: " + finalResult);
+                return finalResult;
 
             }
+
             finally
             {
+                if (rdr != null)
+                {
+                    rdr.Close();
+                }
 
-                conn.Close();
+                if (conn != null)
+                {
+                    conn.Close();
+
+                }
+            }
+
+        }// end Calculate Mean Distance Method
+
+        // 4. Calculate  Max Distance Method
+        public int CalcMaxDistance(DataGridView dg)
+
+        {
+            var maxDistance = dg.Rows.Cast<DataGridViewRow>()
+                    .Max(r => Convert.ToInt32(r.Cells["Running Distance"].Value));
+
+
+            return maxDistance;
+
+        }// end Calculate Max Distance Method
+
+        // 5. Calculate Min Distance Method
+        public int CalcMinDistance(DataGridView dg)
+
+        {
+
+            var maxDistance = dg.Rows.Cast<DataGridViewRow>()
+                    .Min(r => Convert.ToInt32(r.Cells["Running Distance"].Value));
+
+
+            return maxDistance;
+
+        }// end Calculate Min Distance Method
+
+        // 6. Calculate Mean Speed Method
+        public double CalcMeanSpeed(SqlConnection conn)
+        {
+            // Data Reader
+            SqlDataReader rdr = null;
+
+            //Try Block To Read from Database
+            try
+            {
+                //Open Connection
+                conn.Open();
+
+                //Create a SQL Command
+                SqlCommand command = new SqlCommand("SELECT MaxSpeed FROM Players", conn);
+
+                //Associate the Reader with the SQL Command
+                rdr = command.ExecuteReader();
+
+                //Int to Hold Result
+                double result = 0;
+                double playerAmount = 0;
+                //While There is Data to be read
+                while (rdr.Read())
+                {
+                    result += (double)rdr[0];
+                    playerAmount++;
+                }
+
+                double finalResult = (result / playerAmount);
+
+                return finalResult;
 
             }
 
-        } // End Update Method
+            finally
+            {
+                if (rdr != null)
+                {
+                    rdr.Close();
+                }
+
+                if (conn != null)
+                {
+                    conn.Close();
+
+                }
+            }
+
+        }// end Calculate Mean Speed Method
+
+        // 7. Calculate  Max Distance Method
+        public int CalcMinSpeed(DataGridView dg)
+
+        {
+            var minSpeed = dg.Rows.Cast<DataGridViewRow>()
+                     .Min(r => Convert.ToInt32(r.Cells["Max Speed"].Value));
+
+
+            return minSpeed;
+
+        }// end Calculate Max Distance Method
+
+        // 8. Calculate Min Distance Method
+        public int CalcMaxSpeed(DataGridView dg)
+
+        {
+
+            var maxSpeed = dg.Rows.Cast<DataGridViewRow>()
+                   .Max(r => Convert.ToInt32(r.Cells["Max Speed"].Value));
+
+
+            return maxSpeed;
+
+        }// end Calculate Min Distance Method
     }
 }

@@ -94,8 +94,6 @@ namespace PlayersDatabase
 
 
 
-
-
         //Method to load the data into the datagridview
         private void loadData()
         {
@@ -110,13 +108,52 @@ namespace PlayersDatabase
             //Use the dataAdapter to fill the dataset with the Players table
             dataAdapter.Fill(ds, "Players");
 
-            dataGridView1.ReadOnly = false;
-            dataGridView1.MultiSelect = false;
             //Associate the view with the datasource
             dataGridView1.DataSource = ds;
-            dataGridView1.DataMember = "Players";
 
+            //Properties for dataGridView
+            dataGridView1.ReadOnly = false;
+            dataGridView1.MultiSelect = false;
+            dataGridView1.AllowUserToAddRows = false;
+
+            //Table to show
+            dataGridView1.DataMember = "Players";
+            //Can't change age
+            dataGridView1.Columns["Age"].ReadOnly = true;
+            //hide ID column
+            dataGridView1.Columns[0].Visible = false;
+
+            //Calculate Distance Statistics
+            double meandistance = crud.CalcMeanDistance(conn);
+            int mindistance = crud.CalcMinDistance(dataGridView1);
+            int maxdistance = crud.CalcMaxDistance(dataGridView1);
+
+            //Return to View
+            avDistanceAmount.Text = Convert.ToString(meandistance) + " metres";
+            maxDistanceAmount.Text = Convert.ToString(maxdistance) + " metres";
+            minDistanceAmount.Text = Convert.ToString(mindistance) + " metres";
+
+            //Calculate Speed Statistics
+           double meanspeed = crud.CalcMeanSpeed(conn);
+           double minspeed = crud.CalcMinSpeed(dataGridView1);
+           double maxspeed = crud.CalcMaxSpeed(dataGridView1);
+
+            //Return to View
+            avSpeedAmount.Text = Convert.ToString(meanspeed) + " km/hr";
+            maxSpeedAmount.Text = Convert.ToString(maxspeed) + " km/hr";
+            minSpeedAmount.Text = Convert.ToString(minspeed) + " km/hr";
             conn.Close();
+        }
+
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

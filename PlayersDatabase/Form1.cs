@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 
@@ -47,32 +41,50 @@ namespace PlayersDatabase
             //if insert is successful
             if (isUpdated)
             {
-                //Reset the Form Values
-                Utilities.ResetAllControls(this);
                 //Alert Success
                 MessageBox.Show("Player Successfully Inserted.");
                 //Load datagrid with new data
                 loadData();
+                //Reset the Form Values
+                Utilities.ResetAllControls(this);
             }
             //If insert is not successful
             else
             {
                 MessageBox.Show("Could Not Insert Player.");
+                //Reset the Form Values
+                Utilities.ResetAllControls(this);
             }
             
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        //Update Method Using SqlDataAdapter, allows user to directly edit the table and update
+        private void update_Click(object sender, EventArgs e)
         {
-            com.GetUpdateCommand();
-            dataAdapter.Update(ds, "Players");
-            
+            try
+            {
+                //Get Update Command
+                com.GetUpdateCommand();
+                //Update DataSet, Players Table
+                dataAdapter.Update(ds, "Players");
+                //Confirm Update
+                MessageBox.Show("Records Successfully Updated");
+            }
+
+            catch(Exception err)
+            {
+
+                MessageBox.Show("Could not update record:", err.ToString());
+            }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+
+
+        //Delete Records Method Calls the CRUD delete method
+        private void delete_Click(object sender, EventArgs e)
         {
             //Prompt user to confirm that they want to delete the records
-            DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete these records? This cannot be undone.", "Permanent Delete Warning", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete? This cannot be undone.", "Permanent Delete Warning", MessageBoxButtons.YesNo);
             //If Yes
             if (dialogResult == DialogResult.Yes)
             {
@@ -81,7 +93,10 @@ namespace PlayersDatabase
                 {
                     //Get The Selected Players ID
                     int getID = Convert.ToInt32(row.Cells[0].Value.ToString());
+                    //Pass to the CRUD delete method with conn and ID
                     crud.Delete(conn, getID);
+
+                    //Reload the datatable with updated records
                     loadData();
                     
                 }
@@ -95,65 +110,84 @@ namespace PlayersDatabase
 
 
         //Method to load the data into the datagridview
-        private void loadData()
-        {
-            //Select everything in the players db
-            string select = "SELECT Id as 'Player ID' , First_Name as 'First Name', Last_Name as 'Last Name', Age, Height, RunningDistance as 'Running Distance', MaxSpeed as 'Max Speed' FROM Players";
-            //Create a new SqlDataAdapter with the select string and the connection
-            dataAdapter = new SqlDataAdapter(select, conn);
+         private void loadData()
+         {
+             //Select everything in the players db
+             string select = @"SELECT Id as 'Player ID' , First_Name as 'First Name', 
+                                Last_Name as 'Last Name', Age as 'D.O.B.', Height, 
+                                RunningDistance as 'Running Distance', MaxSpeed as 'Max Speed' FROM Players";
 
-            com = new SqlCommandBuilder(dataAdapter); 
-            //Instantiate a new DataSet();
-            ds = new DataSet();
-            //Use the dataAdapter to fill the dataset with the Players table
-            dataAdapter.Fill(ds, "Players");
+             //Create a new SqlDataAdapter with the select string and the connection
+             dataAdapter = new SqlDataAdapter(select, conn);
 
-            //Associate the view with the datasource
-            dataGridView1.DataSource = ds;
+             //Instantiate Command Builder
+             com = new SqlCommandBuilder(dataAdapter); 
 
-            //Properties for dataGridView
-            dataGridView1.ReadOnly = false;
-            dataGridView1.MultiSelect = false;
-            dataGridView1.AllowUserToAddRows = false;
+             //Instantiate a new DataSet();
+             ds = new DataSet();
 
-            //Table to show
-            dataGridView1.DataMember = "Players";
-            //Can't change age
-            dataGridView1.Columns["Age"].ReadOnly = true;
-            //hide ID column
-            dataGridView1.Columns[0].Visible = false;
+             //Use the dataAdapter to fill the dataset with the Players table
+             dataAdapter.Fill(ds, "Players");
 
-            //Calculate Distance Statistics
-            double meandistance = crud.CalcMeanDistance(conn);
-            int mindistance = crud.CalcMinDistance(dataGridView1);
-            int maxdistance = crud.CalcMaxDistance(dataGridView1);
+             //Close Connection
+             conn.Close();
 
-            //Return to View
-            avDistanceAmount.Text = Convert.ToString(meandistance) + " metres";
-            maxDistanceAmount.Text = Convert.ToString(maxdistance) + " metres";
-            minDistanceAmount.Text = Convert.ToString(mindistance) + " metres";
+             //Associate the view with the datasource
+             dataGridView1.DataSource = ds;
 
-            //Calculate Speed Statistics
-           double meanspeed = crud.CalcMeanSpeed(conn);
-           double minspeed = crud.CalcMinSpeed(dataGridView1);
-           double maxspeed = crud.CalcMaxSpeed(dataGridView1);
+             //Properties for dataGridView
+             dataGridView1.ReadOnly = false;
+             dataGridView1.MultiSelect = false;
+             dataGridView1.AllowUserToAddRows = false;
 
-            //Return to View
-            avSpeedAmount.Text = Convert.ToString(meanspeed) + " km/hr";
-            maxSpeedAmount.Text = Convert.ToString(maxspeed) + " km/hr";
-            minSpeedAmount.Text = Convert.ToString(minspeed) + " km/hr";
-            conn.Close();
-        }
+             //Table to show
+             dataGridView1.DataMember = "Players";
+
+             //Can't change age
+             dataGridView1.Columns["D.O.B."].ReadOnly = true;
+
+             //hide ID column
+             dataGridView1.Columns[0].Visible = false;
+
+            //Call statistics method if datagrid has data. Prevents errors being thrown from CRUD class
+            if(dataGridView1.Rows.Count > 0)
+            {
+                //Call the method to load statistics
+                getStatistics();
+            }
+         } //End Load Data
+       
 
 
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
 
-        }
 
-        private void tabPage2_Click(object sender, EventArgs e)
-        {
 
-        }
+
+
+         //Method to getStatistics from the CRUD class
+       private void getStatistics()
+         {
+             //Calculate Distance Statistics
+             double meandistance = crud.CalcMeanDistance(conn);
+             int mindistance = crud.CalcMinDistance(conn);
+             int maxdistance = crud.CalcMaxDistance(conn);
+
+             //Return to View
+             avDistanceAmount.Text = Convert.ToString(meandistance) + " metres";
+             maxDistanceAmount.Text = Convert.ToString(maxdistance) + " metres";
+             minDistanceAmount.Text = Convert.ToString(mindistance) + " metres";
+
+             //Calculate Speed Statistics
+             double meanspeed = crud.CalcMeanSpeed(conn);
+             double minspeed = crud.CalcMinSpeed(conn);
+             double maxspeed = crud.CalcMaxSpeed(conn);
+
+             //Return to View
+             avSpeedAmount.Text = Convert.ToString(meanspeed) + " km/hr";
+             maxSpeedAmount.Text = Convert.ToString(maxspeed) + " km/hr";
+             minSpeedAmount.Text = Convert.ToString(minspeed) + " km/hr";
+
+         } 
+
     }
-}
+ }

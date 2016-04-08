@@ -17,7 +17,7 @@ namespace PlayersDatabase
                 if (control is TextBox)
                 {
                     TextBox textBox = (TextBox)control;
-                    textBox.Text = null;
+                    textBox.Text = String.Empty;
                 }
 
                 if (control is NumericUpDown)

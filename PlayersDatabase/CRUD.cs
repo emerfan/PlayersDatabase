@@ -9,7 +9,7 @@ using System.Data;
 
 namespace PlayersDatabase
 {
-    class CRUD
+    public class CRUD
     {
 
         //1. Insert method
@@ -47,8 +47,7 @@ namespace PlayersDatabase
                 return false;
             }
 
-
-        } //End Update Method
+        } //End Insert Method
 
         //2. DELETE method
         public bool Delete(SqlConnection conn, int id)
@@ -81,7 +80,7 @@ namespace PlayersDatabase
             }
         }
 
-        // 3. Calculate Mean Distance Method
+      // 3. Calculate Mean Distance Method
         public double CalcMeanDistance(SqlConnection conn)
         {
             // Data Reader
@@ -110,7 +109,7 @@ namespace PlayersDatabase
                 }
 
                 double finalResult = (result / playerAmount);
-                //Console.WriteLine("The Mean Running Distance of the Team is is: " + finalResult);
+                conn.Close();
                 return finalResult;
 
             }
@@ -131,37 +130,84 @@ namespace PlayersDatabase
 
         }// end Calculate Mean Distance Method
 
-        // 4. Calculate  Max Distance Method
-        public int CalcMaxDistance(DataGridView dg)
 
-        {
-            var maxDistance = dg.Rows.Cast<DataGridViewRow>()
-                    .Max(r => Convert.ToInt32(r.Cells["Running Distance"].Value));
-
-
-            return maxDistance;
-
-        }// end Calculate Max Distance Method
-
-        // 5. Calculate Min Distance Method
-        public int CalcMinDistance(DataGridView dg)
+        // 4. Calculate Min Distance Method
+        public int CalcMinDistance(SqlConnection conn)
 
         {
 
-            var maxDistance = dg.Rows.Cast<DataGridViewRow>()
-                    .Min(r => Convert.ToInt32(r.Cells["Running Distance"].Value));
+            //Try Block To Read from Database
+            try
+            {
+                //Open Connection
+                conn.Open();
 
+                //Create a DataTable to perform the Min function
+                var table = new DataTable();
+                using (var adapt = new SqlDataAdapter("SELECT * FROM Players", conn))
+                {
+                    //Fill the Datatable with the Players DB
+                    adapt.Fill(table);
+                }
 
-            return maxDistance;
+                int minDistance = Convert.ToInt32(table.Compute("min(RunningDistance)", string.Empty));
+
+                return minDistance;
+
+            }
+            finally
+            {
+
+                if (conn != null)
+                {
+                    conn.Close();
+
+                }
+            }
 
         }// end Calculate Min Distance Method
 
+        // 5. Calculate  Max Distance Method
+        public int CalcMaxDistance(SqlConnection conn)
+
+        {
+
+            //Try Block To Read from Database
+            try
+            {
+                //Open Connection
+                conn.Open();
+
+                //Create a DataTable to perform the Min function
+                var table = new DataTable();
+                using (var adapt = new SqlDataAdapter("SELECT * FROM Players", conn))
+                {
+                    //Fill the Datatable with the Players DB
+                    adapt.Fill(table);
+                }
+
+                int maxDistance = Convert.ToInt32(table.Compute("max(RunningDistance)", string.Empty));
+
+                return maxDistance;
+
+            }
+            finally
+            {
+
+                if (conn != null)
+                {
+                    conn.Close();
+
+                }
+            }
+
+        }// end Calculate Max Distance Method
+
         // 6. Calculate Mean Speed Method
-        public double CalcMeanSpeed(SqlConnection conn)
+      public double CalcMeanSpeed(SqlConnection conn)
         {
             // Data Reader
             SqlDataReader rdr = null;
-
             //Try Block To Read from Database
             try
             {
@@ -206,29 +252,69 @@ namespace PlayersDatabase
 
         }// end Calculate Mean Speed Method
 
-        // 7. Calculate  Max Distance Method
-        public int CalcMinSpeed(DataGridView dg)
-
-        {
-            var minSpeed = dg.Rows.Cast<DataGridViewRow>()
-                     .Min(r => Convert.ToInt32(r.Cells["Max Speed"].Value));
-
-
-            return minSpeed;
-
-        }// end Calculate Max Distance Method
-
-        // 8. Calculate Min Distance Method
-        public int CalcMaxSpeed(DataGridView dg)
-
+        // 7. Calculate Min Speed Method
+        public  double CalcMinSpeed(SqlConnection conn)
         {
 
-            var maxSpeed = dg.Rows.Cast<DataGridViewRow>()
-                   .Max(r => Convert.ToInt32(r.Cells["Max Speed"].Value));
+            //Try Block To Read from Database
+            try
+            {
+                //Open Connection
+                conn.Open();
 
+                //Create a DataTable to perform the Min function
+                var table = new DataTable();
+                using (var adapt = new SqlDataAdapter("SELECT * FROM Players", conn))
+                {
+                    //Fill the Datatable with the Players DB
+                    adapt.Fill(table);
+                }
+                //Calculate Min Speed
+                double minSpeed = Convert.ToDouble(table.Compute("min(MaxSpeed)", string.Empty));
 
-            return maxSpeed;
+                return minSpeed;
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    conn.Close();
 
-        }// end Calculate Min Distance Method
-    }
+                }
+            }
+
+        }// end Calculate Min Speed Method
+
+        // 8. Calculate Max Speed Method
+        public double CalcMaxSpeed(SqlConnection conn)
+
+        {
+            //Try Block To Read from Database
+            try
+            {
+                //Open Connection
+                conn.Open();
+
+                //Create a DataTable to perform the Min function
+                var table = new DataTable();
+                using (var adapt = new SqlDataAdapter("SELECT * FROM Players", conn))
+                {
+                    //Fill the Datatable with the Players DB
+                    adapt.Fill(table);
+                }
+                //Calculate Max Spepd
+                double maxSpeed = Convert.ToDouble(table.Compute("max(MaxSpeed)", string.Empty));
+                return maxSpeed;
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    conn.Close();
+
+                }
+            }
+
+        }// end Calculate Max Speed Method 
+    } 
 }
